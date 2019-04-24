@@ -15,14 +15,11 @@
 	border: 1px solid #e3e6e7;
 	outline: none;
 	background: #fff;
-			background-position-x: 0%;
-			background-position-y: 0%;
+			background-position: 0%, 0%;
 			background-repeat: repeat;
 			background-image: none;
 	height: 55px;
 	padding: 17px 40px 17px 20px;
-			padding-left: 20px;
-	display: inline-block;
 	display: inline-block;
 	cursor: pointer;
 	font-size: 14px;
@@ -80,7 +77,7 @@
 .btn-calc-cta:hover{
 	background: rgb(255, 38, 0);
 	box-shadow: 0 0 10px 0 #6500a8,
-							0 0 0 2px #6500a8;
+			0 0 0 2px #6500a8;
 	color: #ffffff;
 	-webkit-transition: all .4s ease;
 	-moz-transition: all .4s ease;
@@ -278,14 +275,11 @@ input[type="radio"], input[type="checkbox"] {
 	border: 1px solid #e3e6e7;
 	outline: none;
 	background: #fff;
-			background-position-x: 0%;
-			background-position-y: 0%;
+			background-position: 0%, 0%;
 			background-repeat: repeat;
 			background-image: none;
 	height: 55px;
 	padding: 17px 40px 17px 20px;
-			padding-left: 20px;
-	display: inline-block;
 	display: inline-block;
 	cursor: pointer;
 	font-size: 14px;
