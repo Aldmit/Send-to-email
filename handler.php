@@ -13,9 +13,7 @@
 	*/
 
 	// Создаём три флажка для проверки пришедшего запроса
-	$first_form = null;
-	$second_form = null;
-	$third_form = null;
+	$flag_form[0] = null;	$flag_form[1] = null;	$flag_form[2] = null;
 
 	// Перемещаем данные из $_POST в переменные, чтобы удобнее было с ними работать
 	$area = $_POST['area'];
@@ -34,14 +32,14 @@
 		else $msg .= "<br>-Не введена дата начала действия полиса";
 	
 	// Если первые поля введены верно, то отметить флажком '1'
-	if(isset($phone) &&	isset($email) &&	isset($policy)) $first_form = "1";
+	if(isset($phone) &&	isset($email) &&	isset($policy)) $flag_form[0] = "1";
 		else echo $msg."<br>";
 
 	/* Проверка - используются ли файлы вместо первого блока полей?
 		 Если существует имя первого файла первой формы файлов, то файлы используются
 		 Отметить флажком 'f'
 	*/
-	if(isset($_FILES['first_form_file']['name'])) $second_form = "f";
+	if(isset($_FILES['first_form_file']['name'])) $flag_form[1] = "f";
 	else{ // Если нет, то проверяются заполняемые поля 
 		$msg = "<br>";
 		if($_POST['brand'] != "") $brand = $_POST['brand'];
@@ -54,7 +52,7 @@
 			else $msg .= "<br>-Не введён государственный номер";
 		
 		// Если все три параметра были указаны и переменные создались, отметить флажком 'i'
-		if(isset($brand) &&	isset($model) &&	isset($state))	$second_form = "i";
+		if(isset($brand) &&	isset($model) &&	isset($state))	$flag_form[1] = "i";
 			else echo $msg."";
 	}
 
@@ -62,7 +60,7 @@
 		 Если существует имя первого файла второй формы файлов, то файлы используются
 		 Отметить флажком 'f'
 	*/
-	if(isset($_FILES['second_form_file']['name'])) $third_form = "f";
+	if(isset($_FILES['second_form_file']['name'])) $flag_form[2] = "f";
 	else{ // Если нет, то проверяются заполняемые поля 
 		$msg = "<br>";
 		if($_POST['fio'] != "") $fio = $_POST['fio'];
@@ -84,22 +82,22 @@
 			else $msg .= "<br>-Не введён адрес прописки";
 
 		// Если все параметры были указаны и переменные создались, отметить флажком 'i'
-		if(isset($fio) &&	isset($birth) &&	isset($document) &&	isset($series) &&	isset($number) &&	isset($address)) $third_form = "i";
+		if(isset($fio) &&	isset($birth) &&	isset($document) &&	isset($series) &&	isset($number) &&	isset($address)) $flag_form[2] = "i";
 			else echo $msg."";
 	}
  
 	// Некоторая отладочная информация, позволяющая узнать, все ли флажки были сформированы
 	/*
-		if($first_form!=null){
+		if($flag_form[0]!=null){
 			echo " OK 1 ";	
 		}
-		if($second_form !=null){
+		if($flag_form[1] !=null){
 			echo " OK 2 ";	
 		}
-		if($third_form!=null){
+		if($flag_form[2]!=null){
 			echo " OK 3 ";	
 		}
-		if($first_form!=null && $second_form !=null && $third_form!=null){
+		if($flag_form[0]!=null && $flag_form[1] !=null && $flag_form[2]!=null){
 			echo " OK 4 ";	
 		} 
 	*/
@@ -138,20 +136,20 @@
 
 			--$boundary
 
-			Green Card:
+			Заявка на Грин карту:
 
 			Территория покрытия: ".$area." 
 			Срок действия: ".$validity." 
 			Контактный телефон: ".$phone." 
 			E-mail: ".$email." 
-			Дата начала действия полиса: ".$policy."
+			Дата начала действия полиса: ".substr($policy,-2).".".substr($policy,5,2).".".substr($policy,0,4)." 
 
 			Марка автомобиля: ".$brand." 
 			Модель автомобиля: ".$model." 
 			Гос.номер: ".$state."
 
 			Фамилия Имя Отчество: ".$fio."  
-			Дата рождения: ".$birth." 
+			Дата рождения: ".substr($birth,-2).".".substr($birth,5,2).".".substr($birth,0,4)." 
 			Тип документа: ".$document." 
 			Серия: ".$series." 
 			Номер: ".$number." 
@@ -178,7 +176,7 @@
 		$headers .= "Reply-To: " . $from . "\r\n";
 		$headers .= "Content-Type: multipart/mixed; boundary=\"$boundary\"\r\n";
 
-		// Таким способом осуществляется отправка файлов на сайт
+		// Таким способом осуществляется отправка изображений на сайт
 		for($i=0;$i<count($_FILES['first_form_file']['name']);$i++) {
 			if(is_uploaded_file($_FILES['first_form_file']['tmp_name'][$i])) {
 				$attachment = chunk_split(base64_encode(file_get_contents($_FILES['first_form_file']['tmp_name'][$i])));
@@ -186,11 +184,11 @@
 				$filetype = $_FILES['first_form_file']['type'][$i];
 				$filesize += $_FILES['first_form_file']['size'][$i];
 				$message.="
-				--$boundary
-				
-				Content-Type: \"$filetype\"; name=\"$filename\";
-				Content-Transfer-Encoding: base64
-				Content-Disposition: attachment; filename=\"$filename\"
+				--$boundary\n".
+				"Content-Type: \"image/gif\"; name=\"$filename\"\n".
+				"Content-Transfer-Encoding: base64\n" .
+				"Content-Disposition: inline; filename=\"$filename\"\n\n
+
 				$attachment";
 			}
 		}
@@ -199,19 +197,19 @@
 
 			--$boundary
 
-			Green Card:
+			Заявка на Грин карту:
 
 			Территория покрытия: ".$area." 
 			Срок действия: ".$validity." 
 			Контактный телефон: ".$phone." 
 			E-mail: ".$email." 
-			Дата начала действия полиса: ".$policy."
+			Дата начала действия полиса: ".substr($policy,-2).".".substr($policy,5,2).".".substr($policy,0,4)."
 
 			Марка автомобиля,	Модель автомобиля 
 			и Гос.номер должны быть во вложениях.
 
 			Фамилия Имя Отчество: ".$fio."  
-			Дата рождения: ".$birth." 
+			Дата рождения: ".substr($birth,-2).".".substr($birth,5,2).".".substr($birth,0,4)." 
 			Тип документа: ".$document." 
 			Серия: ".$series." 
 			Номер: ".$number." 
@@ -245,11 +243,11 @@
 				$filetype = $_FILES['second_form_file']['type'][$i];
 				$filesize += $_FILES['second_form_file']['size'][$i];
 				$message.="
-				--$boundary
-				
-				Content-Type: \"$filetype\"; name=\"$filename\";
-				Content-Transfer-Encoding: base64
-				Content-Disposition: attachment; filename=\"$filename\"
+				--$boundary\n".
+				"Content-Type: \"image/gif\"; name=\"$filename\"\n".
+				"Content-Transfer-Encoding: base64\n" .
+				"Content-Disposition: inline; filename=\"$filename\"\n\n
+
 				$attachment";
 			}
 		}
@@ -258,13 +256,13 @@
 
 			--$boundary
 
-			Green Card:
+			Заявка на Грин карту:
 
 			Территория покрытия: ".$area." 
 			Срок действия: ".$validity." 
 			Контактный телефон: ".$phone." 
 			E-mail: ".$email." 
-			Дата начала действия полиса: ".$policy."
+			Дата начала действия полиса: ".substr($policy,-2).".".substr($policy,5,2).".".substr($policy,0,4)."
 
 			Марка автомобиля: ".$brand." 
 			Модель автомобиля: ".$model." 
@@ -302,11 +300,11 @@
 				$filetype = $_FILES['first_form_file']['type'][$i];
 				$filesize += $_FILES['first_form_file']['size'][$i];
 				$message.="
-				--$boundary
-				
-				Content-Type: \"$filetype\"; name=\"$filename\";
-				Content-Transfer-Encoding: base64
-				Content-Disposition: attachment; filename=\"$filename\"
+				--$boundary\n".
+				"Content-Type: \"image/gif\"; name=\"$filename\"\n".
+				"Content-Transfer-Encoding: base64\n" .
+				"Content-Disposition: inline; filename=\"$filename\"\n\n
+
 				$attachment";
 			}
 		}
@@ -333,13 +331,13 @@
 
 			--$boundary
 
-			Green Card:
+			Заявка на Грин карту:
 
 			Территория покрытия: ".$area." 
 			Срок действия: ".$validity." 
 			Контактный телефон: ".$phone." 
 			E-mail: ".$email." 
-			Дата начала действия полиса: ".$policy."
+			Дата начала действия полиса: ".substr($policy,-2).".".substr($policy,5,2).".".substr($policy,0,4)."
 
 			Марка автомобиля, Модель автомобиля, Гос.номер,
 			Фамилия Имя Отчество, Дата рождения,
@@ -355,20 +353,17 @@
 		}
 	}
 
-	 	$flag = $first_form.$second_form.$third_form;
+	 	$flag = $flag_form[0].$flag_form[1].$flag_form[2];
 
 	 	if($flag == "1ii"){
 	 		sendMessage1ii($area,$validity,$phone,$email,$policy,$brand,$model,$state,$fio,$birth,$document,$series,$number,$address);
 		}
-	//	else{
 		if($flag == "1fi"){
 			sendMessage1fi($area,$validity,$phone,$email,$policy,$brand,$model,$state,$fio,$birth,$document,$series,$number,$address);
 		}
-	// elseif($flag == "1if")
 		if($flag == "1if"){
 			sendMessage1if($area,$validity,$phone,$email,$policy,$brand,$model,$state,$fio,$birth,$document,$series,$number,$address);
 		}
-		
 		if($flag == "1ff"){
 			sendMessage1ff($area,$validity,$phone,$email,$policy,$brand,$model,$state,$fio,$birth,$document,$series,$number,$address);
 		}
